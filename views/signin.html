@@ -1,9 +1,39 @@
+
 {% extends "base.html" %} {% block main %}
+
+<script>
+var xhtml = new XMLHttpRequest();
+function change(){
+    xhtml.open("GET","/change",true);
+    xhtml.send();
+}
+
+function success(data){
+    $("#c_name").attr('value',data);
+}
+
+xhtml.onreadystatechange = function () { // 状态发生变化时，函数被回调
+    if (xhtml.readyState === 4) { // 成功完成
+
+        if (xhtml.status === 200) {
+
+            return success(xhtml.responseText);
+        } else {
+
+            return fail(xhtml.status);
+        }
+    } else {
+
+    }
+}
+
+</script>
+
 <div class="container">
     <div class="row">
-        <div class="col-md-4 col-md-offset-4">
+        <div class="col-md-4 col-md-offset-4 container">
             <h1>Drunk Chatting</h1>
-            <div class="alert alert-danger">Please sign in before join the room.
+            <div class="alert alert-info">Please choose your favorite name.
             </div>
         </div>
     </div>
@@ -18,9 +48,10 @@
                     <form action="/signin" method="post">
                         <div class="form-group">
                             <label>Name</label>
-                            <input type="text" name="name" class="form-control" placeholder="你的昵称" value="{{ name }}">
+                            <input type="text" id="c_name" name="name" class="form-control" placeholder="你的昵称" value="{{ name }}">
                             <p class="help-block">Your user name</p>
                         </div>
+                        <button type="button" onclick="change()">Change Name</button>
                         <button type="submit" class="btn btn-primary">Sign In</button>
                     </form>
                 </div>
