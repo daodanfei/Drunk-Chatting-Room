@@ -16,37 +16,31 @@ const WebSocketServer = ws.Server;
 
 const app = new Koa();
 
-// log request URL:
 app.use(async (ctx, next) => {
     console.log(`Process ${ctx.request.method} ${ctx.request.url}...`);
     await next();
 });
 
-// parse user from cookie:
 app.use(async (ctx, next) => {
     ctx.state.user = parseUser(ctx.cookies.get('name') || '');
     await next();
 });
 
-// static file support:
 let staticFiles = require('./static-files');
 app.use(staticFiles('/static/', __dirname + '/static'));
 
-// parse request body:
 app.use(bodyParser());
 
-// add nunjucks as view:
 app.use(templating('views', {
     noCache: true,
     watch: true
 }));
 
-// add controller middleware:
 app.use(controller());
 
 let server = app.listen(3000);
 
-function parseUser(obj) {//用户身份识别
+function parseUser(obj) {
     if (!obj) {
         return;
     }
@@ -97,10 +91,8 @@ function createWebSocketServer(server, onConnection, onMessage, onClose, onError
         ws.on('close', onClose);
         ws.on('error', onError);
         if (location.pathname !== '/ws/chat') {
-            // close ws:
             ws.close(4000, 'Invalid URL');
         }
-        // check user:
         let user = parseUser(ws.upgradeReq);
         if (!user) {
             ws.close(4001, 'Invalid user');
@@ -129,7 +121,6 @@ function onConnect() {
     let user = this.user;
     let msg = createMessage('join', user, `${user.name} joined.`);
     this.wss.broadcast(msg);
-    // build user list:
     let users = this.wss.clients.map(function (client) {
         return client.user;
     });

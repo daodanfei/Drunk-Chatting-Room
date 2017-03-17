@@ -1,8 +1,6 @@
 
 const fs = require('fs');
 
-// add url-route in /controllers:
-
 function addMapping(router, mapping) {
     for (var url in mapping) {
         if (url.startsWith('GET ')) {
